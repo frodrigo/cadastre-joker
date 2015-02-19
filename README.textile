@@ -1,28 +1,18 @@
-h1. WhooTS : Sinatra, Ruby - mini WMS -> TMS Proxy
+h1. cadastre-joker
 
-h2. Installation
+This porject is base on WhooTS to server French Cadastre WMS as TMS.
 
-You need :
-* Ruby!
+It just redirect HTTP request after redesign the URL query part.
 
+h2. Joker
+
+Le WMS du cadastre n'est disponible que pour une commune à la foise. Cadastre-joker trouve la bonne commune à utiliser en fonction de la potion de la tuile consulté.
+
+Les polygones de communes proviennent de : https://www.data.gouv.fr/fr/datasets/decoupage-administratif-communal-francais-issu-d-openstreetmap/
 
 h2. Usage
 
-* Gives OSM/Google Tiles, not true TMS (maybe later)
+tms\[20\]:http://localhost:4567/{insee}/{style}/{z}/{x}/{y}.png
 
-<b>http://example.com/tms/z/x/y/{layer}/http://path.to.wms.server</b>
-
-h2. Examples
-* 1 <code>http://example.com/tms/!/!/!/2013/http://warper.geothings.net/maps/wms/2013 </code>
-*
-* 2a. From: http://hypercube.telascience.org/cgi-bin/mapserv?map=/home/ortelius/haiti/haiti.map&request=getMap&service=wms&version=1.1.1&format=image/jpeg&srs=epsg:4326&exceptions=application/vnd.ogc.se_inimage&layers=HAITI&
-*
-* 2b To: <code>http://example.com/tms/!/!/!/HAITI/http://hypercube.telascience.org/cgi-bin/mapserv?map=/home/ortelius/haiti/haiti.map</code>
-*
-* 2c Outputs: http://hypercube.telascience.org/cgi-bin/mapserv?bbox=-8051417.93739076,2107827.49199202,-8051265.06333419,2107980.36604859&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:900913&width=256&height=256&layers=HAITI&map=/home/ortelius/haiti/haiti.map&styles=
-
-h2. Notes
-* Gives OSM/Google Tiles only, so make sure the WMS server support EPSG:900913
-* Doesn't do any caching.
-* See whoots.rb index inline view for more examples and help!
-
+* {insee}: à remplacer par le code insee de la commune ou par "*" pour le mode joker automatique (et double joker "**" pour les tuiles complémentaires à cheval sur plusieurs communes)
+* {style}: "tout", "semi", "transp" ou un style personalisé du cadastre
