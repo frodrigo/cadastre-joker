@@ -2,7 +2,9 @@ require 'rubygems'
 require 'rack'
 require 'sinatra'
 require 'erb'
+require 'pg'
 enable :inline_template
+
 
 get '/hi' do
   "Hello World!"
@@ -12,50 +14,65 @@ get '/' do
   erb :index
 end
 
-get '/tms/:z/:x/:y/:layers/*' do
-  #p params
+get '/:insee/:style/:z/:x/:y.png' do
+  insee = params[:insee]
+  style = params[:style]
   x = params[:x].to_i
   y = params[:y].to_i
   z = params[:z].to_i
   #for Google/OSM tile scheme we need to alter the y:
   y = ((2**z)-y-1)
   #calculate the bbox
-  bbox = get_tile_bbox(x,y,z)
+  min = get_lat_lng_for_number(x, y, z)
+  max = get_lat_lng_for_number(x+1, y+1, z)
+  bbox = "#{min[:lat_deg]},#{min[:lng_deg]},#{max[:lat_deg]},#{max[:lng_deg]}"
   #build up the other params
-  format = "image/png"
-  service = "WMS"
-  version = "1.1.1"
   request = "GetMap"
-  srs = "EPSG:900913"
+  srs = "EPSG:4326"
   width = "256"
   height = "256"
-  layers = params[:layers] || ""
-  #p layers
-  #p params
-  map = params[:map] || ""
-  base_url = params[:splat][0]
-  url = base_url + "?"+ "bbox="+bbox+"&format="+format+"&service="+service+"&version="+version+"&request="+request+"&srs="+srs+"&width="+width+"&height="+height+"&layers="+layers+"&map="+map+"&styles="
-  #p url
+  transp = false
+  if insee[0] == "*"
+    offset = insee.size - 1
+    if offset >= 1
+      transp = true
+    end
+    conn = PG.connect(dbname: 'fred')
+    conn.exec( """
+SELECT insee
+FROM \"communes-20150101-5m\"
+WHERE the_geom && ST_MakeLine(ST_MakePoint(#{min[:lng_deg]}, #{min[:lat_deg]}), ST_MakePoint(#{max[:lng_deg]}, #{max[:lat_deg]}))
+ORDER BY ST_Area(ST_Intersection(the_geom, ST_Envelope(ST_MakeLine(ST_MakePoint(#{min[:lng_deg]}, #{min[:lat_deg]}), ST_MakePoint(#{max[:lng_deg]}, #{max[:lat_deg]}))))) DESC, insee
+LIMIT 1 OFFSET #{offset}""" ) do |result|
+      result.each do |row|
+        insee = row.values_at('insee')[0]
+      end
+    end
+    if insee[0] == "*"
+      status 200
+      body ''
+    end
+  end
+  if style == 'tout' || style == nil
+    style = "BU.Building,AMORCES_CAD,CP.CadastralParcel,HYDRO,BORNE_REPERE,DETAIL_TOPO,LIEUDIT,VOiE_COMMUNICATION"
+  elsif style == 'semi'
+    style = "AMORCES_CAD,CP.CadastralParcel,BORNE_REPERE,DETAIL_TOPO,LIEUDIT,VOiE_COMMUNICATION"
+  elsif style == 'transp'
+    style = "AMORCES_CAD,CP.CadastralParcel,BORNE_REPERE,DETAIL_TOPO,LIEUDIT,VOiE_COMMUNICATION&TRANSPARENT=TRUE"
+  end
+  if transp
+    style += "&TRANSPARENT=TRUE"
+  end
+  url = "http://inspire.cadastre.gouv.fr/scpc/#{insee}.wms?service=WMS&request=GetMap&VERSION=1.3&CRS=#{srs}&WIDTH=#{width}&HEIGHT=#{height}&BBOX=#{bbox}&LAYERS=#{style}&STYLES=&FORMAT=image/png"
   redirect url
 end
 
-#
-# tile utility methods. calculates the bounding box for a given TMS tile.
-# Based on http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection/
-# GDAL2Tiles, Google Summer of Code 2007 & 2008
-# by  Klokan Petr Pridal
-#
-def get_tile_bbox(x,y,z)
-  min_x, min_y = get_merc_coords(x * 256, y * 256, z)
-  max_x, max_y = get_merc_coords( (x + 1) * 256, (y + 1) * 256, z )
-  return "#{min_x},#{min_y},#{max_x},#{max_y}"
-end
-
-def get_merc_coords(x,y,z)
-  resolution = (2 * Math::PI * 6378137 / 256) / (2 ** z)
-  merc_x = (x * resolution -2 * Math::PI  * 6378137 / 2.0)
-  merc_y = (y * resolution - 2 * Math::PI  * 6378137 / 2.0)
-  return merc_x, merc_y
+def get_lat_lng_for_number(xtile, ytile, zoom)
+  n = 2.0 ** zoom
+  lon_deg = xtile / n * 360.0 - 180.0
+  lat_rad = Math::atan(Math::sinh(Math::PI * (1 - 2 * ytile / n)))
+  lat_deg = 180.0 * (lat_rad / Math::PI)
+  {:lat_deg => -lat_deg, :lng_deg => lon_deg}
 end
 
 

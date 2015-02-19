@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    pg (0.13.2)
     rack (1.6.0)
     rack-protection (1.5.3)
       rack
@@ -15,5 +16,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  pg
   rake
   sinatra
