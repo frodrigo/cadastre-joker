@@ -1,12 +1,12 @@
 require 'rubygems'
-require 'vendor/rack/lib/rack'
-require 'vendor/sinatra/lib/sinatra'
+require 'rack'
+require 'sinatra'
   
-set :run, false
+#set :run, false
 set :environment, :production
 #set :views, "views"
 set :inline_templates, 'whoots.rb'
   
-require 'whoots.rb'
-run Sinatra::Application
+require './whoots.rb'
+#run Sinatra::Application
 

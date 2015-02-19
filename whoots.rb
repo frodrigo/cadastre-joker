@@ -1,6 +1,6 @@
 require 'rubygems'
-require 'vendor/rack/lib/rack'
-require 'vendor/sinatra/lib/sinatra'
+require 'rack'
+require 'sinatra'
 require 'erb'
 enable :inline_template
 
