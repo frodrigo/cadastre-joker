@@ -56,8 +56,7 @@ LIMIT 1 OFFSET #{offset}""" ) do |result|
       end
     }
     if insee[0] == "*"
-      status 200
-      body ''
+      redirect "/empty.png"
     end
   end
   if style == 'tout' || style == nil
