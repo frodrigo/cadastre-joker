@@ -3,7 +3,13 @@ require 'rack'
 require 'sinatra'
 require 'erb'
 require 'pg'
+require 'connection_pool'
 enable :inline_template
+
+
+con_pool = ConnectionPool.new(size: 5, timeout: 10) {
+  PG.connect(dbname: 'cadastre-joker')
+}
 
 
 get '/hi' do
@@ -37,17 +43,18 @@ get '/:insee/:style/:z/:x/:y.png' do
     if offset >= 1
       transp = true
     end
-    conn = PG.connect(dbname: 'fred')
-    conn.exec( """
+    con_pool.with{ |conn|
+      conn.exec( """
 SELECT insee
 FROM \"communes-20150101-5m\"
 WHERE the_geom && ST_MakeLine(ST_MakePoint(#{min[:lng_deg]}, #{min[:lat_deg]}), ST_MakePoint(#{max[:lng_deg]}, #{max[:lat_deg]}))
 ORDER BY ST_Area(ST_Intersection(the_geom, ST_Envelope(ST_MakeLine(ST_MakePoint(#{min[:lng_deg]}, #{min[:lat_deg]}), ST_MakePoint(#{max[:lng_deg]}, #{max[:lat_deg]}))))) DESC, insee
 LIMIT 1 OFFSET #{offset}""" ) do |result|
-      result.each do |row|
-        insee = row.values_at('insee')[0]
+        result.each do |row|
+          insee = row.values_at('insee')[0]
+        end
       end
-    end
+    }
     if insee[0] == "*"
       status 200
       body ''

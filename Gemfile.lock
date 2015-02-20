@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    connection_pool (2.1.1)
     pg (0.13.2)
     rack (1.6.0)
     rack-protection (1.5.3)
@@ -16,6 +17,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  connection_pool
   pg
   rake
   sinatra
