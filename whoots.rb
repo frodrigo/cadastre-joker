@@ -69,7 +69,7 @@ LIMIT 1 OFFSET #{offset}""" ) do |result|
   if transp
     style += "&TRANSPARENT=TRUE"
   end
-  url = "http://inspire.cadastre.gouv.fr/scpc/#{insee}.wms?service=WMS&request=GetMap&VERSION=1.3&CRS=#{srs}&WIDTH=#{width}&HEIGHT=#{height}&BBOX=#{bbox}&LAYERS=#{style}&STYLES=&FORMAT=image/png"
+  url = "https://www.cadastre.gouv.fr/scpc/#{insee}.wms?service=WMS&request=GetMap&VERSION=1.3&CRS=#{srs}&WIDTH=#{width}&HEIGHT=#{height}&BBOX=#{bbox}&LAYERS=#{style}&STYLES=&FORMAT=image/png"
   redirect url
 end
 
