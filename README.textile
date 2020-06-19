@@ -10,6 +10,24 @@ Le WMS du cadastre n'est disponible que pour une commune à la foise. Cadastre-j
 
 Les polygones de communes proviennent de : https://www.data.gouv.fr/fr/datasets/decoupage-administratif-communal-francais-issu-d-openstreetmap/
 
+```
+unzip communes-20200101-shp.zip
+shp2pgsql communes-20200101.shp | psql
+
+psql -c "
+create table communes as select insee, nom, st_setsrid(geom, 4326) as geom from "communes-20200101";
+create index communes_idx on communes using gist(geom);
+"
+```
+
+h2. Install
+
+bundle install
+
+h2. Run
+
+bundle exec ruby config.ru
+
 h2. Usage
 
 tms\[20\]:http://localhost:4567/{insee}/{style}/{z}/{x}/{y}.png

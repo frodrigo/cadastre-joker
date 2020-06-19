@@ -47,8 +47,8 @@ get '/:insee/:style/:z/:x/:y.png' do
       conn.exec( """
 SELECT insee
 FROM \"communes\"
-WHERE the_geom && ST_SetSRID(ST_MakeLine(ST_MakePoint(#{min[:lng_deg]}, #{min[:lat_deg]}), ST_MakePoint(#{max[:lng_deg]}, #{max[:lat_deg]})),4326)
-ORDER BY ST_Area(ST_Intersection(the_geom, ST_SetSRID(ST_Envelope(ST_MakeLine(ST_MakePoint(#{min[:lng_deg]}, #{min[:lat_deg]}), ST_MakePoint(#{max[:lng_deg]}, #{max[:lat_deg]}))),4326))) DESC, insee
+WHERE geom && ST_SetSRID(ST_MakeLine(ST_MakePoint(#{min[:lng_deg]}, #{min[:lat_deg]}), ST_MakePoint(#{max[:lng_deg]}, #{max[:lat_deg]})),4326)
+ORDER BY ST_Area(ST_Intersection(geom, ST_SetSRID(ST_Envelope(ST_MakeLine(ST_MakePoint(#{min[:lng_deg]}, #{min[:lat_deg]}), ST_MakePoint(#{max[:lng_deg]}, #{max[:lat_deg]}))),4326))) DESC, insee
 LIMIT 1 OFFSET #{offset}""" ) do |result|
         result.each do |row|
           insee = row.values_at('insee')[0]
