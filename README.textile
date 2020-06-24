@@ -9,13 +9,19 @@ h2. Joker
 Le WMS du cadastre n'est disponible que pour une commune à la foise. Cadastre-joker trouve la bonne commune à utiliser en fonction de la potion de la tuile consulté.
 
 Les polygones de communes proviennent de : https://www.data.gouv.fr/fr/datasets/decoupage-administratif-communal-francais-issu-d-openstreetmap/
+- limites de communes
+- limmites des Arrondissements Municipaux
 
 ```
 unzip communes-20200101-shp.zip
 shp2pgsql communes-20200101.shp | psql
 
+unzip arrondissements-municipaux-20160128-shp.zip
+shp2pgsql arrondissements-municipaux-20160128.shp | psql
+
 psql -c "
-create table communes as select insee, nom, st_setsrid(geom, 4326) as geom from "communes-20200101";
+create table communes as select insee, nom, st_setsrid(geom, 4326) as geom from "communes-20200101" where insee not in ('13055', '69123', '75056');
+insert into communes(insee, nom, geom) SELECT insee, nom, st_setsrid(geom, 4326) as geom from arrondissements-municipaux-20160128;
 create index communes_idx on communes using gist(geom);
 "
 ```
