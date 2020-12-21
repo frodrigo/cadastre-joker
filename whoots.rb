@@ -8,7 +8,7 @@ enable :inline_template
 
 
 con_pool = ConnectionPool.new(size: 5, timeout: 10) {
-  PG.connect(dbname: 'cadastre-joker')
+  PG.connect(host: 'postgis', dbname: 'postgres', user: 'postgres', password: 'postgres')
 }
 
 
