@@ -1,21 +1,23 @@
-h1. cadastre-joker
+# cadastre-joker
 
 This porject is base on WhooTS to server French Cadastre WMS as TMS.
 
 It just redirect HTTP request after redesign the URL query part.
 
-h2. Install
+# Install
 
+```
 docker-compose pull
 docker-compose build
+```
 
+## Run
 
-h2. Run
-
+```
 docker-compose up -d
+```
 
-
-h2. Local Data
+## Local Data
 
 Le WMS du cadastre n'est disponible que pour une commune à la foise. Cadastre-joker trouve la bonne commune à utiliser en fonction de la potion de la tuile consulté.
 
@@ -41,9 +43,9 @@ create index communes_idx on communes using gist(geom);
 "
 ```
 
-h2. Usage
+# Usage
 
 tms\[20\]:http://localhost:4567/{insee}/{style}/{z}/{x}/{y}.png
 
-* {insee}: à remplacer par le code insee de la commune ou par "*" pour le mode joker automatique (et double joker "**" pour les tuiles complémentaires à cheval sur plusieurs communes)
-* {style}: "tout", "semi", "transp" ou un style personalisé du cadastre
+* **insee**: à remplacer par le code insee de la commune ou par "*" pour le mode joker automatique (et double joker "**" pour les tuiles complémentaires à cheval sur plusieurs communes)
+* **style**: "tout", "semi", "transp" ou un style personalisé du cadastre
