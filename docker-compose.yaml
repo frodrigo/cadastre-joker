@@ -13,5 +13,7 @@ services:
     build:
       context: .
     restart: always
+    depends_on:
+      - "postgis"
     ports:
       - 4567:4567
