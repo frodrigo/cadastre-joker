@@ -94,8 +94,8 @@ __END__
     <title>Redirection HTTP de tuile TMS vers le WMS du Cadastre</title>
     <meta charset="utf-8" />
 
-    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+    <script src="leaflet.js"></script>
+    <link rel="stylesheet" href="leaflet.css" />
 </head>
 <body>
     <div id="map" style="width: 100%; height: 600px"></div>
