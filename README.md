@@ -1,6 +1,6 @@
 # cadastre-joker
 
-This porject is base on WhooTS to server French Cadastre WMS as TMS.
+This project is based on WhooTS to server French Cadastre WMS as TMS.
 
 It just redirect HTTP request after redesign the URL query part.
 
@@ -19,11 +19,11 @@ docker-compose up -d
 
 ## Local Data
 
-Le WMS du cadastre n'est disponible que pour une commune à la foise. Cadastre-joker trouve la bonne commune à utiliser en fonction de la potion de la tuile consulté.
+Le WMS du cadastre n'est disponible que pour une commune à la fois. Cadastre-joker trouve la bonne commune à utiliser en fonction de la portion de la tuile consultée.
 
 Les polygones de communes proviennent de : https://www.data.gouv.fr/fr/datasets/decoupage-administratif-communal-francais-issu-d-openstreetmap/
 - limites de communes
-- limmites des Arrondissements Municipaux
+- limites des Arrondissements Municipaux
 
 ```
 wget https://www.data.gouv.fr/fr/datasets/r/a01aff2a-8f36-4a77-a73f-efc212fe2899 -O communes-20200101-shp.zip
@@ -48,4 +48,4 @@ create index communes_idx on communes using gist(geom);
 tms\[20\]:http://localhost:4567/{insee}/{style}/{z}/{x}/{y}.png
 
 * **insee**: à remplacer par le code insee de la commune ou par "*" pour le mode joker automatique (et double joker "**" pour les tuiles complémentaires à cheval sur plusieurs communes)
-* **style**: "tout", "semi", "transp" ou un style personalisé du cadastre
+* **style**: "tout", "semi", "transp" ou un style personnalisé du cadastre
